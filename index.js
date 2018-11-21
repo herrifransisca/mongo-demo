@@ -6,12 +6,30 @@ mongoose
   .catch(err => console.error('Could not connect to MongoDB...', err));
 
 const courseSchema = mongoose.Schema({
-  name: { type: String, required: true },
+  name: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 255
+    // match: /pattern/
+  },
   author: String,
+  category: {
+    type: String,
+    required: true,
+    enum: ['web', 'mobile', 'network']
+  },
   tags: [String],
   date: { type: Date, default: Date.now },
   isPublished: Boolean,
-  price: Number
+  price: {
+    type: Number,
+    required: function() {
+      return this.isPublished; // cannot use arrow function here, "this" will refer to something else (the caller)
+    },
+    min: 10,
+    max: 200
+  }
 });
 
 const Course = mongoose.model('Course', courseSchema);
@@ -19,10 +37,11 @@ const Course = mongoose.model('Course', courseSchema);
 async function createCourse() {
   const course = new Course({
     // name: 'Angular Course',
+    category: '-',
     author: 'Mosh',
     tags: ['node', 'frontend'],
-    isPublished: true,
-    price: 15
+    isPublished: true
+    // price: 15
   });
 
   try {
