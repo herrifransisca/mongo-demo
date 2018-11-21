@@ -101,3 +101,23 @@ async function updateCourse(id) {
 }
 
 updateCourse('5bf4f9270a56a7033b58bab8');
+
+async function removeCourse(id) {
+  // find the first one and delete that (the first document it found that isPublished = false)
+  await Course.deleteOne({ isPublished: false });
+
+  const result = await Course.deleteOne({ _id: id });
+  console.log(result); // { n: 1, ok: 1 }
+
+  // delete multiple documents
+  // returns the result object that shows us the number of documents that were deleted
+  const result = await Course.deleteMany({ _id: id });
+  console.log(result); // { n: 1, ok: 1 }
+
+  // get the document that was deleted
+  // if we don't have a course with the given id, this method will return "null"
+  const course = await Course.findByIdAndRemove(id);
+  console.log(course);
+}
+
+removeCourse('5bf4f9270a56a7033b58bab8');
