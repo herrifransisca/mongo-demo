@@ -9,12 +9,11 @@
 // 3. @line-19, not ordered like mosh. prefer mosh's, because easy to read
 // 4. @line-36, it's not the job of the function, to console.log the result
 
-
 const mongoose = require('mongoose');
 
 mongoose
   .connect('mongodb://localhost/mongo-exercises')
-  .then((console.log('Connected to MongoDB...'))
+  .then(console.log('Connected to MongoDB...'))
   .catch(err => console.error('Cannot connect to MongoDB...', err));
 
 const courseSchema = mongoose.Schema({
