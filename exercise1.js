@@ -27,6 +27,11 @@ const courseSchema = mongoose.Schema({
 
 const Course = mongoose.model('Course', courseSchema);
 
+// get all the published backend courses,
+// sort them by their name,
+// pick only their name and author,
+// and display them.
+
 async function getCourses() {
   const courses = await Course.find({ tags: 'backend', isPublished: true })
     .sort({ name: 1 })
