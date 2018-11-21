@@ -20,13 +20,15 @@ const courseSchema = mongoose.Schema({
     enum: ['web', 'mobile', 'network']
   },
   tags: {
-    // how about [ String ] ?
-    // how can we validate, array must be ONLY STRING ?
     type: Array,
     validate: {
-      validator: function(v) {
-        // return v.length > 0; // cannot read property "length" of null
-        return v && v.length > 0;
+      isAsync: true,
+      validator: function(v, callback) {
+        setTimeout(() => {
+          // do some async work
+          const result = v && v.length > 0;
+          callback(result);
+        }, 4000);
       },
       message: 'A course should have at least one tag.'
     }
