@@ -17,7 +17,10 @@ const courseSchema = mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['web', 'mobile', 'network']
+    enum: ['web development', 'mobile', 'network'],
+    lowercase: true
+    // uppercase: true
+    // trim: true
   },
   tags: {
     type: Array,
@@ -41,7 +44,9 @@ const courseSchema = mongoose.Schema({
       return this.isPublished; // cannot use arrow function here, "this" will refer to something else (the caller)
     },
     min: 10,
-    max: 200
+    max: 200,
+    get: v => Math.round(v),
+    set: v => Math.round(v)
   }
 });
 
@@ -49,12 +54,12 @@ const Course = mongoose.model('Course', courseSchema);
 
 async function createCourse() {
   const course = new Course({
-    // name: 'Angular Course',
-    category: '-',
+    name: 'Angular Course',
+    category: 'Web Development',
     author: 'Mosh',
-    tags: null,
-    isPublished: true
-    // price: 15
+    tags: ['frontend'],
+    isPublished: true,
+    price: 15.8
   });
 
   try {
@@ -79,12 +84,12 @@ async function getCourses() {
   const pageNumber = 2;
   const pageSize = 10;
 
-  const courses = await Course.find({ author: 'Mosh', isPublished: true })
-    .skip((pageNumber - 1) * pageSize)
-    .limit(10)
+  const courses = await Course.find({ _id: '5bf5f001e2c6bd1e10226f69' })
+    // .skip((pageNumber - 1) * pageSize)
+    // .limit(10)
     .sort({ name: 1 })
-    .select({ name: 1, tags: 1 });
-  console.log(courses);
+    .select({ name: 1, tags: 1, price: 1 });
+  console.log(courses[0].price); // returns 16 -> even though, in database the value = 15.8 (because of getter)
 }
 
 async function updateCourse(id) {
@@ -127,7 +132,7 @@ async function removeCourse(id) {
   const course = await Course.findByIdAndRemove(id);
   console.log(course);
 }
-createCourse();
-// getCourses();
+// createCourse();
+getCourses();
 // updateCourse('5bf4f9270a56a7033b58bab8');
 // removeCourse('5bf4f9270a56a7033b58bab8');
