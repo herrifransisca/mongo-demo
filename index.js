@@ -57,24 +57,47 @@ async function updateCourse(id) {
          update directly
          optionally: get the updated document
   */
+  // #2 - Approach: Update first
+  // update multiple documents in one go
+  // const course = await Course.update({ isPublished: false });
 
-  // #1 - Approach: Query first
-  const course = await Course.findById(id);
-  if (!course) return;
+  // update a course with particular id
+  // returns / what we get here -> the result of the update operation, not the course object
+  const result = await Course.update(
+    { _id: id },
+    {
+      // mongodb update operators
+      $set: {
+        author: 'Mosh',
+        isPublished: false
+      }
+    }
+  );
+  console.log(result); // { n: 1, nModified: 1, ok: 1 }
 
-  // two approaches and both of it is the same.
-  // #A
-  course.isPublished = true;
-  course.author = 'Another Author';
+  // get the document that was updated
+  // returns / what we get here -> the course object -> ORIGINAL DOCUMENT / the document before the update operation
+  //                                                    (the author is still 'Mosh', not 'Herri')
+  const courseObjectBeforeUpdateOperation = await Course.findByIdAndUpdate(id, {
+    $set: {
+      author: 'Herri',
+      isPublished: true
+    }
+  });
+  console.log(courseObjectBeforeUpdateOperation); // { ..., author: 'Mosh', isPublished: false, ... }
 
-  // #B
-  // course.set({
-  //   isPublished: true,
-  //   author: 'Another Author'
-  // });
-
-  const result = await course.save();
-  console.log(result);
+  // returns / get the updated document
+  const updatedCourseObject = await Course.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        author: 'Jason',
+        isPublished: false
+      }
+    },
+    { new: true }
+  );
+  console.log(updatedCourseObject); // { ..., author: 'Jason', isPublished: false, ... }
 }
 
 updateCourse('5bf4f9270a56a7033b58bab8');
